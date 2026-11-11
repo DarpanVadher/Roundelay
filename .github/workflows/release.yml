@@ -55,7 +55,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   windows:
-    name: Windows (zip)
+    name: Windows (installer + zip)
     needs: [verify, tests]
     runs-on: windows-latest
     steps:
@@ -79,6 +79,15 @@ jobs:
           New-Item -ItemType Directory -Force dist | Out-Null
           Copy-Item LICENSE, NOTICE, THIRD_PARTY_NOTICES.md $dir
           Compress-Archive -Path "$dir\*" -DestinationPath "dist\Roundelay-${{ needs.verify.outputs.version }}-windows-x64.zip"
+      - name: Build the installer (Inno Setup)
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress; $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" }
+          $src = "$PWD\app\build\windows\x64\runner\Release"
+          & $iscc "/DAppVersion=${{ needs.verify.outputs.version }}" "/DSourceDir=$src" installer\roundelay.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed" }
+          if (-not (Test-Path "dist\Roundelay-Setup-${{ needs.verify.outputs.version }}.exe")) { throw "installer was not produced" }
       - uses: actions/upload-artifact@v4
         with: { name: dist-windows, path: dist/*, if-no-files-found: error }
 
