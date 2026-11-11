@@ -80,7 +80,7 @@ release, and say what was wrong in the notes. Delete a release only if it contai
    For local release builds create `app/android/key.properties` with `storeFile`, `storePassword`, `keyAlias`, `keyPassword`.
 2. **GitHub Pages:** Settings, Pages, Source = "GitHub Actions".
 3. **Who can tag:** add a tag ruleset (Settings, Rules) restricting creation of `v*` tags to maintainers.
-4. **Optional later:** Windows code-signing certificate, Apple Developer account (macOS notarization, iOS), an
+4. **Optional later:** Windows code-signing certificate, Apple Developer account (macOS notarization, iOS), and
    an AppImage for Linux.
 
 ## What the pipeline does not do (be honest in release notes)
