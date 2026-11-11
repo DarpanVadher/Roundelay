@@ -8,7 +8,7 @@ The section for a version is used as that version's GitHub Release notes, so wri
 
 ## [Unreleased]
 
-## [0.1.0] - TBD
+## [0.1.0] - 2026-11-11
 
 First public release.
 
