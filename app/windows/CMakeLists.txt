@@ -91,7 +91,8 @@ endif()
 # Override the location with the MPSP_FFI_DLL environment variable (needed when CARGO_TARGET_DIR is
 # outside the repo, e.g. to dodge Windows' 260-character path limit when building Opus).
 if(DEFINED ENV{MPSP_FFI_DLL})
-  set(MPSP_FFI_DLL "$ENV{MPSP_FFI_DLL}")
+  # Forward slashes: backslashes such as in "D:\a\..." are read as escape sequences in the generated install script.
+  file(TO_CMAKE_PATH "$ENV{MPSP_FFI_DLL}" MPSP_FFI_DLL)
 else()
   set(MPSP_FFI_DLL "${CMAKE_CURRENT_SOURCE_DIR}/../../core/target/release/mpsp_ffi.dll")
 endif()
