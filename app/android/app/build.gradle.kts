@@ -1,8 +1,18 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+// Release signing: read from android/key.properties (local) or the ANDROID_KEYSTORE_* environment variables
+// (CI). Without either, release builds are signed with the debug key so local `flutter run --release` works;
+// such a build must never be published.
+val keyProps = Properties()
+rootProject.file("key.properties").takeIf { it.exists() }?.inputStream()?.use { keyProps.load(it) }
+
+fun signingValue(prop: String, env: String): String? = keyProps.getProperty(prop) ?: System.getenv(env)
 
 android {
     namespace = "com.adwebsolutions.multiphone_player"
@@ -28,15 +38,6 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
-
-    // Release signing: read from android/key.properties (local) or the ANDROID_KEYSTORE_* environment variables
-    // (CI). Without either, release builds are signed with the debug key so local `flutter run --release` works;
-    // such a build must never be published.
-    val keyProps = java.util.Properties().apply {
-        val f = rootProject.file("key.properties")
-        if (f.exists()) f.inputStream().use { load(it) }
-    }
-    fun signingValue(prop: String, env: String): String? = keyProps.getProperty(prop) ?: System.getenv(env)
 
     signingConfigs {
         create("release") {
