@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches: [main, ci-setup]
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege: these jobs only read the repository.
+permissions:
+  contents: read
+
+# A newer push to the same branch makes an older, still-running run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  # libopus' CMakeLists predates CMake 4; without this the codec does not configure on current runners.
+  CMAKE_POLICY_VERSION_MINIMUM: "3.5"
+
+jobs:
+  # The engine: pairing, sync, jitter buffer, drift control, sessions, the C interface.
+  # None of these tests needs a sound card, so they run on plain CI machines.
+  engine:
+    name: Engine tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: core
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Linux build dependencies (ALSA headers for the audio library)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev pkg-config cmake
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: core
+
+      - name: Test the whole workspace
+        run: cargo test --workspace --locked
+
+  # The Flutter app: static analysis and its own tests.
+  app:
+    name: App analyze and test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.9"
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      # Tests that load the real engine library skip themselves unless MPSP_FFI_PATH points at it, and CI machines
+      # have no sound card to run a real session on. The engine crate's integration tests above cover the same
+      # pairing/sync/streaming behaviour; run the full set locally (see CONTRIBUTING.md).
+      - name: Test
+        run: flutter test
+
+  # Proves the Windows app still builds and really bundles the engine library next to the executable.
+  windows-app:
+    name: Windows app build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: core
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.9"
+          cache: true
+
+      - name: Build the engine library
+        working-directory: core
+        run: cargo build --release -p mpsp-ffi --locked
+
+      - name: Build the Windows app
+        working-directory: app
+        env:
+          MPSP_FFI_DLL: ${{ github.workspace }}\core\target\release\mpsp_ffi.dll
+        run: flutter build windows --release
+
+      - name: Check the engine library was bundled
+        working-directory: app
+        run: |
+          $dir = "build\windows\x64\runner\Release"
+          foreach ($f in "multiphone_player.exe", "mpsp_ffi.dll") {
+            if (-not (Test-Path "$dir\$f")) { throw "missing from the bundle: $f" }
+          }
+          Get-ChildItem $dir | Select-Object Name, Length | Format-Table -AutoSize
