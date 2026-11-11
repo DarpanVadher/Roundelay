@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://darpanvadher.github.io/Roundelay/sitemap.xml

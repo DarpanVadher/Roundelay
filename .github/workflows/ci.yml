@@ -5,6 +5,7 @@ on:
     branches: [main, ci-setup]
   pull_request:
   workflow_dispatch:
+  workflow_call: # reused by release.yml so a release runs the same tests
 
 # Least privilege: these jobs only read the repository.
 permissions:

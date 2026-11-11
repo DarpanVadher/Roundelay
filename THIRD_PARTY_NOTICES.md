@@ -85,6 +85,9 @@ the camera scanner and rely on pasting the pairing link, which the app supports.
 | ffi (Dart) | Calling the engine library | BSD 3-Clause |
 | cupertino_icons | Icons | MIT |
 
+The landing page in `site/` (not part of the app) serves two fonts from `site/fonts/`: **Bricolage Grotesque**
+and **Figtree**, both under the SIL Open Font License 1.1.
+
 An audit of the Rust dependency tree (all crates, including transitive ones) found only permissive licenses
 (MIT, Apache-2.0, BSD, ISC, Zlib, Unicode, Unlicense, CC0-style). One crate (`r-efi`) offers an optional
 `LGPL-2.1-or-later` alternative alongside MIT and Apache-2.0; Roundelay uses it under MIT/Apache-2.0.

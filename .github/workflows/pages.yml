@@ -1,0 +1,54 @@
+# Publishes the landing page in site/ to GitHub Pages. It redeploys when the page changes and whenever a release is
+# published, so the download buttons and the version number stay current.
+# One-time setup: Settings, Pages, Source = "GitHub Actions".
+name: Landing page
+
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/pages.yml"]
+  release:
+    types: [published, edited, deleted]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Record the latest release in the site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh api "repos/${{ github.repository }}/releases/latest" > latest.json 2>/dev/null; then
+            # Keep only what the page needs. Draft releases are never returned by this endpoint.
+            jq '{tag_name, published_at, html_url, assets: [.assets[] | {name, size, browser_download_url}]}' latest.json > site/release.json
+            version=$(jq -r '.tag_name' latest.json | sed 's/^v//')
+            sed -i "s/__VERSION__/${version}/" site/index.html
+            echo "Latest release: $version"
+          else
+            echo "No published release yet; the page will say so."
+            sed -i '/"softwareVersion": "__VERSION__",/d' site/index.html
+          fi
+          ! grep -q "__VERSION__" site/index.html
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

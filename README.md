@@ -9,6 +9,13 @@ the host approves each one, and everyone plays the same audio at the same moment
 > [Tested on](#tested-on)), but it is young, the pairing protocol has **not been independently audited**, and
 > several platforms are not built yet. Please read [Known limitations](#known-limitations) before relying on it.
 
+## Download
+
+Get the latest build for Windows, Android, Linux or macOS from the
+[Releases page](https://github.com/DarpanVadher/Roundelay/releases/latest) or the
+[project website](https://darpanvadher.github.io/Roundelay/). Windows and Android are supported; Linux and macOS are
+experimental guests; iOS is not available yet. Maintainers: see [docs/RELEASING.md](docs/RELEASING.md).
+
 ## What it does
 
 - **Host shares system audio.** On Windows, whatever the PC plays. On Android, whatever other apps play (apps can
