@@ -2,6 +2,12 @@
 resolver = "2"
 members = ["mpsp-core", "mpsp-engine", "mpsp-ffi", "mpsp-cli"]
 
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/DarpanVadher/Roundelay"
+
 [profile.release]
 lto = "thin"
 panic = "unwind"

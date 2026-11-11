@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roundelay: play one device's audio on every device, in sync</title>
+<meta name="description" content="Roundelay shares the audio a Windows PC or Android phone is playing with every other device on your Wi-Fi or hotspot, in sync. Scan a QR code to join. Free and open source.">
+<link rel="canonical" href="https://darpanvadher.github.io/Roundelay/">
+<meta name="theme-color" content="#2433ff">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="index, follow, max-image-preview:large">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Roundelay">
+<meta property="og:title" content="Roundelay: one device plays, every device follows">
+<meta property="og:description" content="Share what your PC or phone is playing with every device on your Wi-Fi, in sync. Scan a QR code to join. Free and open source.">
+<meta property="og:url" content="https://darpanvadher.github.io/Roundelay/">
+<meta property="og:image" content="https://darpanvadher.github.io/Roundelay/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Roundelay: one device plays, every device follows">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Roundelay: one device plays, every device follows">
+<meta name="twitter:description" content="Share what your PC or phone is playing with every device on your Wi-Fi, in sync. Free and open source.">
+<meta name="twitter:image" content="https://darpanvadher.github.io/Roundelay/og-image.png">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/figtree.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://darpanvadher.github.io/Roundelay/#app",
+      "name": "Roundelay",
+      "description": "Share the audio a Windows PC or Android phone is playing with other devices on the same Wi-Fi or hotspot and hear it in sync on all of them.",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Windows, Android, Linux, macOS",
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "isAccessibleForFree": true,
+      "softwareVersion": "__VERSION__",
+      "downloadUrl": "https://github.com/DarpanVadher/Roundelay/releases/latest",
+      "url": "https://darpanvadher.github.io/Roundelay/",
+      "codeRepository": "https://github.com/DarpanVadher/Roundelay",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Does Roundelay work over Bluetooth?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Devices must be on the same Wi-Fi network, wired LAN or phone hotspot. Bluetooth cannot keep several devices tightly in sync. You can still use Bluetooth headphones or speakers as the output of any device that runs Roundelay." } },
+        { "@type": "Question", "name": "Do I need an internet connection or an account?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No account and no cloud. Audio travels directly between your devices on your own network, encrypted, and never goes through a server." } },
+        { "@type": "Question", "name": "Why is there a delay?",
+          "acceptedAnswer": { "@type": "Answer", "text": "To keep every device in sync, each one plays the audio a fixed moment after the host sends it. The default is 160 milliseconds and you can change it: lower on a strong network, higher on a busy one. Because of this delay, mute or delay the host's own speakers if you can hear both." } },
+        { "@type": "Question", "name": "Can I share audio from any app?",
+          "acceptedAnswer": { "@type": "Answer", "text": "On Windows the host shares everything the PC plays. On Android the host shares apps that allow audio capture, which includes most music and video apps. Some apps block capture." } },
+        { "@type": "Question", "name": "Is it safe?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Each pairing uses a one-time QR code and a verified key exchange, the host must approve every new device, and all audio packets are encrypted and authenticated. The code is open source so you can check it." } }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <a class="brand" href="./" aria-label="Roundelay home">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="16" cy="16" r="2.6" fill="currentColor"/></svg>
+    <span>Roundelay</span>
+  </a>
+  <nav aria-label="Main">
+    <a href="#how">How it works</a>
+    <a href="#platforms">Platforms</a>
+    <a href="#faq">FAQ</a>
+    <a href="https://github.com/DarpanVadher/Roundelay">GitHub</a>
+    <a class="nav-cta" href="#download">Download</a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="hero-copy">
+      <h1>One device plays.<br>Every device follows.</h1>
+      <p class="lede">Roundelay shares what your Windows PC or Android phone is playing with every other device on your Wi-Fi or hotspot, and keeps them all in sync. Scan a QR code to join.</p>
+      <div class="cta-row">
+        <a class="btn primary" id="hero-download" href="#download">Download</a>
+        <a class="btn ghost" href="#how">See how it works</a>
+      </div>
+      <p class="hero-note" id="hero-note">Free and open source. No account, no cloud.</p>
+    </div>
+
+    <figure class="stage">
+      <svg viewBox="0 0 560 480" role="img" aria-labelledby="stage-title stage-desc">
+        <title id="stage-title">Sound spreading from one host to four devices</title>
+        <desc id="stage-desc">A host in the middle sends rings of sound outward. Four devices around it show level bars that move together, because they play the same audio at the same moment.</desc>
+
+        <g class="rings" fill="none" stroke="#fff" stroke-width="2">
+          <circle cx="280" cy="240" r="60"/>
+          <circle cx="280" cy="240" r="60"/>
+          <circle cx="280" cy="240" r="60"/>
+        </g>
+        <g class="links" stroke="#fff" stroke-opacity=".28" stroke-width="2" stroke-dasharray="3 7" stroke-linecap="round">
+          <line x1="280" y1="240" x2="104" y2="104"/><line x1="280" y1="240" x2="456" y2="104"/>
+          <line x1="280" y1="240" x2="104" y2="376"/><line x1="280" y1="240" x2="456" y2="376"/>
+        </g>
+
+        <g class="host">
+          <circle cx="280" cy="240" r="46" fill="#ffd84a"/>
+          <path d="M262 226h10l12-10v48l-12-10h-10z" fill="#0d1233"/>
+          <path d="M292 224c7 7 7 25 0 32" fill="none" stroke="#0d1233" stroke-width="4" stroke-linecap="round"/>
+        </g>
+
+        <!-- phone -->
+        <g class="dev" transform="translate(70 62)">
+          <rect x="0" y="0" width="68" height="84" rx="12" fill="#fff"/>
+          <g class="eq" fill="#2433ff"><rect x="14" y="30" width="8" height="30" rx="4"/><rect x="26" y="30" width="8" height="30" rx="4"/><rect x="38" y="30" width="8" height="30" rx="4"/><rect x="50" y="30" width="8" height="30" rx="4"/></g>
+        </g>
+        <!-- laptop -->
+        <g class="dev" transform="translate(396 62)">
+          <rect x="0" y="0" width="120" height="84" rx="10" fill="#fff"/>
+          <g class="eq" fill="#2433ff"><rect x="34" y="30" width="8" height="30" rx="4"/><rect x="48" y="30" width="8" height="30" rx="4"/><rect x="62" y="30" width="8" height="30" rx="4"/><rect x="76" y="30" width="8" height="30" rx="4"/></g>
+        </g>
+        <!-- speaker -->
+        <g class="dev" transform="translate(70 334)">
+          <rect x="0" y="0" width="68" height="84" rx="12" fill="#fff"/>
+          <g class="eq" fill="#2433ff"><rect x="14" y="30" width="8" height="30" rx="4"/><rect x="26" y="30" width="8" height="30" rx="4"/><rect x="38" y="30" width="8" height="30" rx="4"/><rect x="50" y="30" width="8" height="30" rx="4"/></g>
+        </g>
+        <!-- tablet -->
+        <g class="dev" transform="translate(396 334)">
+          <rect x="0" y="0" width="120" height="84" rx="10" fill="#fff"/>
+          <g class="eq" fill="#2433ff"><rect x="34" y="30" width="8" height="30" rx="4"/><rect x="48" y="30" width="8" height="30" rx="4"/><rect x="62" y="30" width="8" height="30" rx="4"/><rect x="76" y="30" width="8" height="30" rx="4"/></g>
+        </g>
+      </svg>
+      <figcaption>Every device plays the same moment of the audio, so the bars line up.</figcaption>
+    </figure>
+  </section>
+
+  <section class="band" id="how" aria-labelledby="how-h">
+    <div class="wrap two">
+      <div>
+        <h2 id="how-h">Join in the time it takes to scan a code</h2>
+        <p>No pairing menus, no accounts, no router settings. Everything happens on your own network.</p>
+      </div>
+      <ol class="steps">
+        <li><strong>Start sharing</strong> on the device that is playing. Roundelay shows a QR code.</li>
+        <li><strong>Scan it</strong> with Roundelay on another device. The host asks you to approve the newcomer.</li>
+        <li><strong>Listen together.</strong> Add as many devices as the network can carry. Move the latency slider if the Wi-Fi is busy.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="wrap facts" aria-labelledby="facts-h">
+    <h2 id="facts-h">Built so the beat lands together</h2>
+    <dl>
+      <div><dt>Clocks agree first</dt><dd>Each guest measures how far its clock is from the host's, using the quickest round trip it sees, then schedules every sound against the host's timeline.</dd></div>
+      <div><dt>Drift is corrected quietly</dt><dd>Crystals run at slightly different speeds. Roundelay nudges playback by under half a percent to stay aligned, with no clicks or gaps.</dd></div>
+      <div><dt>Latency you can tune</dt><dd>The default delay is 160 ms, chosen from measurements on real phone Wi-Fi where shorter delays dropped late packets. Lower it on a good network, raise it on a bad one.</dd></div>
+      <div><dt>Private by design</dt><dd>One-time QR pairing, a verified key exchange, host approval for every device, and encrypted, authenticated audio packets. Nothing leaves your network.</dd></div>
+      <div><dt>Follows your headphones</dt><dd>On Windows, switch between speakers and Bluetooth headphones and the audio follows within about a second.</dd></div>
+      <div><dt>Open source</dt><dd>Apache-2.0. Read it, build it, fix it. The engine is Rust, the app is Flutter.</dd></div>
+    </dl>
+  </section>
+
+  <section class="band alt" id="platforms" aria-labelledby="plat-h">
+    <div class="wrap">
+      <h2 id="plat-h">Where it runs today</h2>
+      <p class="sub">We say what works and what does not. Hosts capture the audio; guests play it.</p>
+      <div class="table-wrap">
+      <table>
+        <caption class="sr">Platform support</caption>
+        <thead><tr><th scope="col">Platform</th><th scope="col">Host (share audio)</th><th scope="col">Guest (play audio)</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Windows 10 / 11</th><td>Yes, everything the PC plays</td><td>Yes</td><td>Supported</td></tr>
+          <tr><th scope="row">Android 5.0+</th><td>Yes, apps that allow capture (Android 10+)</td><td>Yes</td><td>Supported</td></tr>
+          <tr><th scope="row">Linux</th><td>Not yet</td><td>Should work, little tested</td><td>Experimental</td></tr>
+          <tr><th scope="row">macOS</th><td>Not yet</td><td>Should work, little tested</td><td>Experimental, not notarized</td></tr>
+          <tr><th scope="row">iOS</th><td>Not possible (iOS cannot capture other apps)</td><td>Planned</td><td>Coming later</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap download" id="download" aria-labelledby="dl-h">
+    <h2 id="dl-h">Download Roundelay</h2>
+    <p class="sub" id="dl-sub">Always the latest release, straight from GitHub.</p>
+    <div id="dl-list" class="dl-list">
+      <p class="dl-fallback"><a class="btn primary" href="https://github.com/DarpanVadher/Roundelay/releases/latest">Open the latest release on GitHub</a></p>
+    </div>
+    <p class="fine" id="dl-fine">Downloads are not code-signed yet, so Windows SmartScreen or macOS Gatekeeper may warn the first time you open the app. Each release lists SHA-256 checksums so you can verify the files.</p>
+  </section>
+
+  <section class="band" id="faq" aria-labelledby="faq-h">
+    <div class="wrap narrow">
+      <h2 id="faq-h">Questions</h2>
+      <details><summary>Does it work over Bluetooth?</summary><p>No. Devices must share a Wi-Fi network, wired LAN or phone hotspot, because Bluetooth cannot keep several devices tightly in sync. Bluetooth headphones and speakers still work as the output of any device running Roundelay.</p></details>
+      <details><summary>Do I need internet or an account?</summary><p>Neither. Audio goes directly between your devices on your own network, encrypted, and never through a server.</p></details>
+      <details><summary>Why is there a delay?</summary><p>To keep devices in sync, each one plays the audio a fixed moment after the host sends it. The default is 160 ms and you can change it. If you can hear the host's own speakers as well, mute them or lower them, because they play live and the guests play slightly later.</p></details>
+      <details><summary>Can I share audio from any app?</summary><p>On Windows, everything the PC plays. On Android, apps that allow audio capture, which covers most music and video apps. Some apps block capture and will stay silent.</p></details>
+      <details><summary>The audio is silent on a guest. What should I check?</summary><p>On Windows, open the volume mixer and make sure Roundelay is not muted. The app shows a warning with a shortcut when it detects this. Also check the guest's system volume and output device.</p></details>
+      <details><summary>Is it safe?</summary><p>Pairing uses a one-time QR code and a verified key exchange, the host approves every new device, and every audio packet is encrypted and authenticated. The source is public so you can check, and the <a href="https://github.com/DarpanVadher/Roundelay/blob/main/SECURITY.md">security policy</a> says how to report a problem.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-row">
+    <p>Roundelay is open source under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>.</p>
+    <p><a href="https://github.com/DarpanVadher/Roundelay">Source</a> · <a href="https://github.com/DarpanVadher/Roundelay/releases">All releases</a> · <a href="https://github.com/DarpanVadher/Roundelay/issues">Report an issue</a> · <a href="https://github.com/DarpanVadher/Roundelay/blob/main/CONTRIBUTING.md">Contribute</a></p>
+  </div>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>

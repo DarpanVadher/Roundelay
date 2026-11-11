@@ -94,6 +94,19 @@ set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
 
+# Bundle the Rust audio engine (core/mpsp-ffi), built first with: cargo build -p mpsp-ffi --release
+# Override the location with the MPSP_FFI_LIB environment variable.
+if(DEFINED ENV{MPSP_FFI_LIB})
+  set(MPSP_FFI_LIB "$ENV{MPSP_FFI_LIB}")
+else()
+  set(MPSP_FFI_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../../core/target/release/libmpsp_ffi.so")
+endif()
+if(EXISTS "${MPSP_FFI_LIB}")
+  install(FILES "${MPSP_FFI_LIB}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}" COMPONENT Runtime)
+else()
+  message(WARNING "libmpsp_ffi.so not found at ${MPSP_FFI_LIB}: the app will start in demo mode (no real audio).")
+endif()
+
 install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   COMPONENT Runtime)
 

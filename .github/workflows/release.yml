@@ -1,0 +1,262 @@
+# Release pipeline. Push a tag like v0.2.0 (or v0.2.0-rc.1) and every platform is built and attached to a DRAFT
+# GitHub Release that a maintainer reviews and publishes. See docs/RELEASING.md.
+#
+# "Run workflow" (workflow_dispatch) does a dry run: it builds everything and uploads the files as workflow
+# artifacts, but creates no release.
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build, without the leading v (for example 0.2.0-rc.1)"
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CMAKE_POLICY_VERSION_MINIMUM: "3.5"
+  FLUTTER_VERSION: "3.47.9"
+
+jobs:
+  # Checks the tag, the versions in the source and the changelog agree, and that the tests pass.
+  verify:
+    name: Verify version and changelog
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      prerelease: ${{ steps.v.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        name: Check versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then raw="${{ inputs.version }}"; else raw="${GITHUB_REF_NAME#v}"; fi
+          if ! [[ "$raw" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then echo "::error::'$raw' is not a SemVer version"; exit 1; fi
+          core="${raw%%-*}"
+          cargo_v=$(sed -n '/^\[workspace.package\]/,/^\[/{s/^version = "\(.*\)"/\1/p}' core/Cargo.toml)
+          pub_v=$(sed -n 's/^version: \([0-9.]*\)+.*/\1/p' app/pubspec.yaml)
+          echo "tag/input: $raw   core/Cargo.toml: $cargo_v   app/pubspec.yaml: $pub_v"
+          [ "$cargo_v" = "$core" ] || { echo "::error::core/Cargo.toml version ($cargo_v) does not match $core"; exit 1; }
+          [ "$pub_v" = "$core" ] || { echo "::error::app/pubspec.yaml version ($pub_v) does not match $core"; exit 1; }
+          grep -q "^## \[$core\]" CHANGELOG.md || { echo "::error::CHANGELOG.md has no '## [$core]' section"; exit 1; }
+          echo "version=$raw" >> "$GITHUB_OUTPUT"
+          if [[ "$raw" == *-* ]]; then echo "prerelease=true" >> "$GITHUB_OUTPUT"; else echo "prerelease=false" >> "$GITHUB_OUTPUT"; fi
+
+  tests:
+    name: Tests
+    needs: verify
+    uses: ./.github/workflows/ci.yml
+
+  windows:
+    name: Windows (zip)
+    needs: [verify, tests]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable, flutter-version: "${{ env.FLUTTER_VERSION }}", cache: true }
+      - name: Build the engine library
+        working-directory: core
+        run: cargo build --release -p mpsp-ffi --locked
+      - name: Build the app
+        working-directory: app
+        env:
+          MPSP_FFI_DLL: ${{ github.workspace }}\core\target\release\mpsp_ffi.dll
+        run: flutter build windows --release --build-name=${{ needs.verify.outputs.version }} --build-number=${{ github.run_number }}
+      - name: Package
+        shell: pwsh
+        run: |
+          $dir = "app\build\windows\x64\runner\Release"
+          foreach ($f in "multiphone_player.exe","mpsp_ffi.dll") { if (-not (Test-Path "$dir\$f")) { throw "$f missing from the bundle" } }
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item LICENSE, NOTICE, THIRD_PARTY_NOTICES.md $dir
+          Compress-Archive -Path "$dir\*" -DestinationPath "dist\Roundelay-${{ needs.verify.outputs.version }}-windows-x64.zip"
+      - uses: actions/upload-artifact@v4
+        with: { name: dist-windows, path: dist/*, if-no-files-found: error }
+
+  android:
+    name: Android (APK, AAB)
+    needs: [verify, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "17" }
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable, flutter-version: "${{ env.FLUTTER_VERSION }}", cache: true }
+      - name: Build tools
+        run: |
+          sudo apt-get update && sudo apt-get install -y cmake ninja-build
+          cargo install cargo-ndk --locked
+      - name: Build the engine library for each ABI
+        working-directory: core
+        shell: bash
+        run: |
+          set -euo pipefail
+          NDK="${ANDROID_NDK_HOME:-$(ls -d "$ANDROID_HOME"/ndk/* | sort -V | tail -1)}"
+          export ANDROID_NDK_HOME="$NDK"
+          export CMAKE_GENERATOR=Ninja
+          # audiopus_sys builds Opus through the cmake crate, which does not pass ANDROID_ABI, so the NDK silently
+          # falls back to armeabi-v7a. A tiny toolchain file per target fixes the ABI (same trick as build-android.ps1).
+          mkdir -p "$RUNNER_TEMP/tc"
+          for pair in arm64-v8a:aarch64_linux_android armeabi-v7a:armv7_linux_androideabi x86_64:x86_64_linux_android; do
+            abi="${pair%%:*}"; triple="${pair##*:}"
+            printf 'set(ANDROID_ABI %s)\nset(ANDROID_PLATFORM android-21)\ninclude("%s/build/cmake/android.toolchain.cmake")\n' "$abi" "$NDK" > "$RUNNER_TEMP/tc/$abi.cmake"
+            export "CMAKE_TOOLCHAIN_FILE_$triple=$RUNNER_TEMP/tc/$abi.cmake"
+          done
+          cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 --platform 21 -o ../app/android/app/src/main/jniLibs build -p mpsp-ffi --release --locked
+          find ../app/android/app/src/main/jniLibs -name '*.so' -exec ls -l {} \;
+      - name: Signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        shell: bash
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            if [ "${{ github.event_name }}" = "push" ]; then echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set; refusing to publish an Android build signed with the debug key"; exit 1; fi
+            echo "::warning::No signing key: dry run, the APK is signed with the debug key and must not be published"
+          else
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+          fi
+      - name: Build APKs and bundle
+        working-directory: app
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          v=${{ needs.verify.outputs.version }}; n=${{ github.run_number }}
+          flutter build apk --release --split-per-abi --build-name=$v --build-number=$n
+          flutter build appbundle --release --build-name=$v --build-number=$n
+      - name: Package
+        shell: bash
+        run: |
+          v=${{ needs.verify.outputs.version }}; mkdir -p dist
+          cp app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk "dist/Roundelay-$v-android-arm64.apk"
+          cp app/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk "dist/Roundelay-$v-android-armv7.apk"
+          cp app/build/app/outputs/flutter-apk/app-x86_64-release.apk "dist/Roundelay-$v-android-x86_64.apk"
+          cp app/build/app/outputs/bundle/release/app-release.aab "dist/Roundelay-$v-android.aab"
+      - uses: actions/upload-artifact@v4
+        with: { name: dist-android, path: dist/*, if-no-files-found: error }
+
+  linux:
+    name: Linux (tar.gz, experimental)
+    needs: [verify, tests]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev pkg-config cmake ninja-build clang libgtk-3-dev liblzma-dev libstdc++-12-dev
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable, flutter-version: "${{ env.FLUTTER_VERSION }}", cache: true }
+      - name: Build the engine library
+        working-directory: core
+        run: cargo build --release -p mpsp-ffi --locked
+      - name: Build the app
+        working-directory: app
+        env:
+          MPSP_FFI_LIB: ${{ github.workspace }}/core/target/release/libmpsp_ffi.so
+        run: flutter build linux --release --build-name=${{ needs.verify.outputs.version }} --build-number=${{ github.run_number }}
+      - name: Package
+        run: |
+          set -e
+          b=app/build/linux/x64/release/bundle
+          test -f "$b/lib/libmpsp_ffi.so" || { echo "::error::engine library missing from the bundle"; exit 1; }
+          cp LICENSE NOTICE THIRD_PARTY_NOTICES.md "$b/"
+          mkdir -p dist
+          tar -czf "dist/Roundelay-${{ needs.verify.outputs.version }}-linux-x64.tar.gz" -C "$b" .
+      - uses: actions/upload-artifact@v4
+        with: { name: dist-linux, path: dist/*, if-no-files-found: error }
+
+  macos:
+    name: macOS (zip, experimental)
+    needs: [verify, tests]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "aarch64-apple-darwin,x86_64-apple-darwin" }
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable, flutter-version: "${{ env.FLUTTER_VERSION }}", cache: true }
+      - name: Build the engine library (universal)
+        working-directory: core
+        run: |
+          cargo build --release -p mpsp-ffi --locked --target aarch64-apple-darwin
+          cargo build --release -p mpsp-ffi --locked --target x86_64-apple-darwin
+          lipo -create -output libmpsp_ffi.dylib target/aarch64-apple-darwin/release/libmpsp_ffi.dylib target/x86_64-apple-darwin/release/libmpsp_ffi.dylib
+          install_name_tool -id @rpath/libmpsp_ffi.dylib libmpsp_ffi.dylib
+      - name: Build the app
+        working-directory: app
+        run: flutter build macos --release --build-name=${{ needs.verify.outputs.version }} --build-number=${{ github.run_number }}
+      - name: Package (unsigned)
+        run: |
+          set -e
+          app="app/build/macos/Build/Products/Release/Roundelay.app"
+          mkdir -p "$app/Contents/Frameworks" dist
+          cp core/libmpsp_ffi.dylib "$app/Contents/Frameworks/"
+          # Ad-hoc signature so the app is internally consistent; it is NOT notarized, so Gatekeeper still warns.
+          codesign --force --deep --sign - "$app"
+          ditto -c -k --keepParent "$app" "dist/Roundelay-${{ needs.verify.outputs.version }}-macos-universal.zip"
+      - uses: actions/upload-artifact@v4
+        with: { name: dist-macos, path: dist/*, if-no-files-found: error }
+
+  # iOS cannot be distributed without an Apple Developer account. This only proves the code still compiles.
+  ios-check:
+    name: iOS (compile check only)
+    needs: [verify]
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable, flutter-version: "${{ env.FLUTTER_VERSION }}", cache: true }
+      - working-directory: app
+        run: flutter build ios --release --no-codesign
+
+  publish:
+    name: Create draft release
+    if: github.event_name == 'push'
+    needs: [verify, windows, android, linux, macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: dist, pattern: "dist-*", merge-multiple: true }
+      - name: Checksums
+        working-directory: dist
+        run: sha256sum Roundelay-* > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - uses: actions/attest-build-provenance@v2
+        with: { subject-path: "dist/Roundelay-*" }
+      - name: Release notes from the changelog
+        run: |
+          core="${{ needs.verify.outputs.version }}"; core="${core%%-*}"
+          awk -v h="## [$core]" 'index($0,h)==1{f=1;next} /^## \[/{f=0} f' CHANGELOG.md > notes.md
+          {
+            echo; echo "### Downloads"
+            echo "Pick the file for your device. Verify it against \`SHA256SUMS.txt\` if you like."
+            echo "Windows and macOS builds are not code-signed, so a first-run warning is expected. Linux and macOS are experimental."
+          } >> notes.md
+          cat notes.md
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=""; [ "${{ needs.verify.outputs.prerelease }}" = "true" ] && flags="--prerelease"
+          gh release create "${GITHUB_REF_NAME}" dist/* --draft $flags --verify-tag \
+            --title "Roundelay ${{ needs.verify.outputs.version }}" --notes-file notes.md
