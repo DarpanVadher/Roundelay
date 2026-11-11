@@ -15,6 +15,19 @@ cd ../app && flutter analyze && flutter test
 `mpsp_ffi` library, otherwise those tests are skipped (and say so). Please do not add tests that pass by being
 skipped, or that only restate the code they test.
 
+## Making a change
+
+`main` is protected: nobody pushes to it directly, including maintainers. Every change goes through a pull request
+that must pass CI and have its review conversations resolved before it can be merged.
+
+1. Fork the repository (or create a branch if you have write access) and make your change there.
+2. Open a pull request against `main` and fill in the template.
+3. Wait for the CI checks (engine tests on Linux and Windows, app analysis and tests, Windows app build) to pass.
+4. Merging is by squash or rebase, so `main` keeps a linear history.
+
+Maintainers: releases follow [docs/RELEASING.md](docs/RELEASING.md). The protection is described in `.github/rulesets/protect-main.json`; import it from the repository's
+Settings, Rules, Rulesets.
+
 ## How we work
 
 - **Measure before you claim.** Audio bugs here have repeatedly turned out to be somewhere other than where the
