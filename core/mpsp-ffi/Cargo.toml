@@ -1,0 +1,17 @@
+[package]
+name = "mpsp-ffi"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "mpsp_ffi"
+crate-type = ["cdylib"]
+
+[dependencies]
+mpsp-engine = { path = "../mpsp-engine" }
+serde_json = "1"
+
+# cpal's Android backend (Oboe) reads the app Context through ndk-context; a Flutter app must hand it over via JNI.
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"
+ndk-context = "0.1"

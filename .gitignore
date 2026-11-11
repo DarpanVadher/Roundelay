@@ -1,0 +1,52 @@
+# --- Rust ---
+/core/target/
+**/target/
+Cargo.lock.bak
+
+# --- Flutter / Dart (the Flutter template adds app/.gitignore too; this repeats the big ones) ---
+/app/build/
+/app/.dart_tool/
+/app/.flutter-plugins-dependencies
+/app/.packages
+/app/pubspec_overrides.yaml
+
+# --- Android ---
+/app/android/.gradle/
+# absolute SDK path of whoever built it
+/app/android/local.properties
+# signing config
+/app/android/key.properties
+# built by core/build-android.ps1, never committed
+/app/android/app/src/main/jniLibs/
+*.keystore
+*.jks
+*.apk
+*.aab
+
+# --- Generated platform files that embed local absolute paths ---
+/app/ios/Flutter/Generated.xcconfig
+/app/ios/Flutter/flutter_export_environment.sh
+/app/macos/Flutter/ephemeral/
+/app/windows/flutter/ephemeral/
+/app/linux/flutter/ephemeral/
+
+# --- Secrets and local state: never commit these ---
+# a host's long-term identity key (the CLI writes it to its working directory)
+host_key.bin
+.env
+*.pem
+*.p12
+
+# --- Diagnostics output (guest/host traces, audio dumps, captures) ---
+*.f32
+*.raw
+trace.csv
+audio-trace.csv
+capture.wav
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

@@ -1,0 +1,7 @@
+[workspace]
+resolver = "2"
+members = ["mpsp-core", "mpsp-engine", "mpsp-ffi", "mpsp-cli"]
+
+[profile.release]
+lto = "thin"
+panic = "unwind"
