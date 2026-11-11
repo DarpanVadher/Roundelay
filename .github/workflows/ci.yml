@@ -40,7 +40,7 @@ jobs:
       - name: Linux build dependencies (ALSA headers for the audio library)
         if: runner.os == 'Linux'
         timeout-minutes: 12
-        run: bash .github/scripts/apt-install.sh libasound2-dev pkg-config cmake
+        run: bash "${{ github.workspace }}/.github/scripts/apt-install.sh" libasound2-dev pkg-config cmake
 
       - uses: dtolnay/rust-toolchain@stable
 
