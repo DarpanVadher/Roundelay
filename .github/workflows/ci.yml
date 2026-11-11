@@ -39,7 +39,7 @@ jobs:
 
       - name: Linux build dependencies (ALSA headers for the audio library)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libasound2-dev pkg-config cmake
+        run: sudo apt-get -o Acquire::Retries=5 update && sudo apt-get -o Acquire::Retries=5 install -y libasound2-dev pkg-config cmake
 
       - uses: dtolnay/rust-toolchain@stable
 
