@@ -103,7 +103,17 @@ jobs:
         working-directory: app
         env:
           MPSP_FFI_DLL: ${{ github.workspace }}\core\target\release\mpsp_ffi.dll
-        run: flutter build windows --release
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          Test-Path $env:MPSP_FFI_DLL | Out-Host
+          flutter build windows --release -v *> build.log
+          $code = $LASTEXITCODE
+          if ($code -ne 0) {
+            $tail = (Get-Content build.log | Select-String -Pattern "error|Error|fail|FAILED" | Select-Object -Last 15) -join "%0A"
+            Write-Host "::error title=windows build::$tail"
+          }
+          exit $code
 
       - name: Check the engine library was bundled
         working-directory: app
