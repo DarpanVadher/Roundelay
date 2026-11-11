@@ -5,7 +5,7 @@ that a maintainer tests and then publishes.
 
 | Platform | File | Status |
 |---|---|---|
-| Windows 10/11 x64 | `Roundelay-X.Y.Z-windows-x64.zip` | Supported (host and guest) |
+| Windows 10/11 x64 | `Roundelay-Setup-X.Y.Z.exe` (installer), `Roundelay-X.Y.Z-windows-x64.zip` (portable) | Supported (host and guest) |
 | Android 5.0+ | `Roundelay-X.Y.Z-android-arm64.apk` (also `-armv7`, `-x86_64`, and a `.aab`) | Supported (host and guest) |
 | Linux x64 | `Roundelay-X.Y.Z-linux-x64.tar.gz` | Experimental, guest only |
 | macOS (Apple silicon and Intel) | `Roundelay-X.Y.Z-macos-universal.zip` | Experimental, guest only, not notarized |
@@ -41,7 +41,7 @@ that a maintainer tests and then publishes.
 5. **Watch the Release workflow.** It verifies versions, runs the tests, builds all platforms, writes
    `SHA256SUMS.txt`, adds build-provenance attestations, and creates a draft release.
 6. **Smoke-test the draft on real hardware** (download the draft's files, not your local build):
-   - [ ] Windows zip: unzip, run `multiphone_player.exe`, no "demo mode" banner (the engine library loaded).
+   - [ ] Windows installer: install, launch from the Start menu, no "demo mode" banner (the engine library loaded); also unzip the portable zip and run it.
    - [ ] Android APK on a phone: installs over the previous release (same signing key), app opens.
    - [ ] Pair Windows host to Android guest by QR, play audio for a minute: no silence, no repeated glitches.
    - [ ] Pair Android host to a second device if the release touched capture.
@@ -81,7 +81,7 @@ release, and say what was wrong in the notes. Delete a release only if it contai
 2. **GitHub Pages:** Settings, Pages, Source = "GitHub Actions".
 3. **Who can tag:** add a tag ruleset (Settings, Rules) restricting creation of `v*` tags to maintainers.
 4. **Optional later:** Windows code-signing certificate, Apple Developer account (macOS notarization, iOS), an
-   Inno Setup installer for Windows, an AppImage for Linux.
+   an AppImage for Linux.
 
 ## What the pipeline does not do (be honest in release notes)
 

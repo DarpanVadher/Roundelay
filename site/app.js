@@ -11,7 +11,8 @@
   if (!list) return;
 
   var PLATFORMS = [
-    { id: "windows", name: "Windows", note: "Windows 10 or 11, 64-bit. Unzip and run multiphone_player.exe.", test: /windows-x64\.zip$/i, exp: false },
+    { id: "windows", name: "Windows", note: "Windows 10 or 11, 64-bit. Run the installer, or unzip the portable build.", test: /Roundelay-Setup-[^/]*\.exe$/i, exp: false,
+      extra: [{ label: "Portable zip", test: /windows-x64\.zip$/i }] },
     { id: "android", name: "Android", note: "Android 5.0 or newer. Most phones need the arm64 file.", test: /android-arm64\.apk$/i, exp: false,
       extra: [{ label: "32-bit ARM", test: /android-armv7\.apk$/i }, { label: "x86_64", test: /android-x86_64\.apk$/i }, { label: "App bundle", test: /android\.aab$/i }] },
     { id: "linux", name: "Linux", note: "64-bit. Guest only, little tested.", test: /linux-x64\.tar\.gz$/i, exp: true },
