@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://darpanvadher.github.io/Roundelay/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/privacy-policy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/terms-and-conditions.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/gdpr-compliance.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/cookie-consent.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/legal-basis.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/marketing-consent.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/data-deletion.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/data-retention.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/data-processing-agreements.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/third-party-disclosure.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/data-security.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/data-breach-procedure.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/intellectual-property.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/open-source-licences.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://darpanvadher.github.io/Roundelay/legal/payments-and-subscriptions.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

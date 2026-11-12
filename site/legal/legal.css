@@ -1,0 +1,42 @@
+/* Legal pages: reuse the site tokens from ../style.css */
+.legal-hero { background: var(--cobalt); color: #fff; position: relative; overflow: hidden; padding: clamp(6rem, 11vw, 8rem) 0 clamp(2rem, 5vw, 3.5rem); }
+.legal-hero::after {
+  content: ""; position: absolute; right: -6rem; top: 50%; width: 22rem; height: 22rem; translate: 0 -50%; border-radius: 50%;
+  box-shadow: 0 0 0 2.2rem rgba(255, 255, 255, .08), 0 0 0 5rem rgba(255, 255, 255, .05), inset 0 0 0 .5rem rgba(255, 255, 255, .12);
+  pointer-events: none;
+}
+.legal-title { position: relative; z-index: 1; }
+.legal-title h1 { font-size: clamp(2.2rem, 6vw, 3.8rem); }
+.legal-title .eyebrow { font: 700 .85rem/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--sun); margin: 0 0 .9rem; }
+.legal-title .lede { max-width: 40rem; margin: 1rem 0 0; color: #e4e8ff; font-size: clamp(1.05rem, 2vw, 1.2rem); }
+
+main.legal { padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(3rem, 7vw, 5rem); max-width: 46rem; }
+.legal .updated { color: var(--ink-soft); font-size: .92rem; margin-bottom: 1.8rem; }
+.legal section { margin: 0 0 2.2rem; }
+.legal h2 { font-size: clamp(1.3rem, 3vw, 1.7rem); margin-bottom: .7rem; }
+.legal ul, .legal ol { padding-left: 1.3rem; margin: 0 0 1em; }
+.legal li { margin-bottom: .45rem; }
+.legal code { font-size: .92em; background: var(--ground-alt); padding: .1em .35em; border-radius: 5px; overflow-wrap: anywhere; }
+.legal table { width: 100%; border-collapse: collapse; font-size: .97rem; margin: 0 0 1em; }
+.legal th, .legal td { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.legal th { color: var(--ink-soft); font-weight: 700; }
+.legal .note { background: var(--ground-alt); border: 1px solid var(--line); padding: .9rem 1.1rem; border-radius: 12px; }
+
+.pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.pager a { display: flex; flex-direction: column; text-decoration: none; font-weight: 700; max-width: 48%; }
+.pager a span { font: 600 .8rem/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: .3rem; }
+.pager a[rel="next"] { text-align: right; margin-left: auto; }
+.pager a:hover { text-decoration: underline; }
+
+.cards { list-style: none; padding: 0 !important; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: .9rem; margin-top: 1.6rem; }
+.cards li { margin: 0; }
+.cards a {
+  display: grid; gap: .25rem; height: 100%; padding: 1rem 1.1rem; text-decoration: none; color: var(--ink);
+  background: var(--ground-alt); border: 1px solid var(--line); border-radius: 14px; transition: transform .2s var(--ease), border-color .2s;
+}
+.cards a:hover { transform: translateY(-3px); border-color: var(--link); }
+.cards .num { font: 800 .85rem/1 var(--display); color: var(--link); }
+.cards .t { font: 800 1.1rem/1.2 var(--display); }
+.cards .d { font-size: .9rem; color: var(--ink-soft); line-height: 1.4; }
+@media (max-width: 40rem) { .legal-hero::after { display: none; } .pager a { max-width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .cards a { transition: none; } .cards a:hover { transform: none; } }
