@@ -258,4 +258,23 @@ void main() {
     await t.pump(const Duration(milliseconds: 100));
     expect(find.byKey(const Key('mixer-warning')), findsNothing);
   });
+
+  testWidgets('legal: pages open from home and show their text, including the data table', (t) async {
+    phoneScreen(t);
+    await t.pumpWidget(app());
+    await t.pump(const Duration(seconds: 1));
+    await t.tap(find.byKey(const Key('open-legal')));
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 400));
+    expect(find.text('Privacy Policy'), findsOneWidget);
+    await t.scrollUntilVisible(find.byKey(const Key('legal-data-retention')), 200, scrollable: find.byType(Scrollable).last);
+    await t.tap(find.byKey(const Key('legal-data-retention')));
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 400));
+    expect(find.text('Data Retention'), findsWidgets);
+    expect(find.textContaining('retain no user data'), findsOneWidget);
+    final url = find.textContaining('https://darpanvadher.github.io/Roundelay/legal/data-retention.html');
+    await t.scrollUntilVisible(url, 300, scrollable: find.byType(Scrollable).last);
+    expect(url, findsOneWidget);
+  });
 }

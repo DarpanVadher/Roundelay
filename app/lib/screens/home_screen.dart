@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import 'guest_screen.dart';
 import 'host_screen.dart';
+import 'legal_screen.dart';
 import 'scan_screen.dart';
 import '../widgets/glass.dart';
 import '../widgets/roundelay_art.dart';
@@ -102,6 +103,15 @@ class HomeScreen extends StatelessWidget {
                           scanQr: scanQr ?? (_hasCamera ? scanPairingQr : null),
                         ),
                       ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: TextButton.icon(
+                      key: const Key('open-legal'),
+                      icon: const Icon(Icons.policy_outlined, size: 18),
+                      label: const Text('Privacy & legal'),
+                      onPressed: () => open(const LegalScreen()),
                     ),
                   ),
                 ],
