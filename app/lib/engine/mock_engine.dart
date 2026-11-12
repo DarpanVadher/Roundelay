@@ -34,8 +34,11 @@ class MockGuestEngine implements GuestEngine {
   @override Stream<GuestStatus> get status => _c.stream;
   /// The delay the UI asked for in the last [join] (lets tests check the latency slider).
   int? lastDelayMs;
+  /// The link the UI passed to the last [join] (lets tests check that Wi-Fi details were stripped).
+  String? lastLink;
   @override Future<void> join(String link, {int audioPort = 0, int delayMs = defaultLatencyMs}) async {
     lastDelayMs = delayMs;
+    lastLink = link;
     if (!looksLikePairingLink(link)) { _c.add(const GuestStatus(phase: GuestPhase.error, message: 'Not a valid pairing link')); return; }
     _c.add(const GuestStatus(phase: GuestPhase.pairing, message: 'Connecting to host...'));
     await Future<void>.delayed(const Duration(milliseconds: 400));

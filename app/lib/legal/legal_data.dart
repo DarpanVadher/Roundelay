@@ -47,6 +47,7 @@ const legalPages = <LegalPage>[
           '**Audio** is captured on the host, encrypted, and sent directly to the guests you approve over your Wi-Fi, hotspot or LAN (UDP for audio, TCP for pairing). It is not sent to the internet and is not recorded or saved by the app.',
           '**Pairing details**: a guest\'s device name and local network address are shown to the host so the host can approve or deny the join. They are held in memory while connected and are not persisted.',
           '**The host\'s identity key** is saved as a file in the host\'s own data folder so guests can recognise it. On Windows this is `%APPDATA%\\MultiPhonePlayer`. It never leaves the device.',
+          '**Hotspot Wi-Fi details** (optional): if a host switches on Include hotspot Wi-Fi in the QR, the name and password they typed are saved on that device only, and are placed inside the pairing QR code and link so guests can join the hotspot and pair in one scan. Anyone who can see that QR can read the password. A hotspot the app creates itself is not remembered.',
           '**Diagnostics**: the app only writes a local trace when someone starts it with the trace option on, and that trace stays on that device.',
         ]),
       ]),
@@ -54,6 +55,8 @@ const legalPages = <LegalPage>[
         LegalBlock(LegalKind.bullets, [
           '**Record audio and media projection**: so a host can capture what other apps play. Android asks you each time.',
           '**Camera**: so a guest can scan the host\'s QR code. Frames are decoded on the device, using Google ML Kit\'s on-device scanner, and are not stored or sent anywhere by Roundelay. You can skip the camera and paste the pairing link instead.',
+          '**Nearby devices (Android 13 and newer) or location (older)**: only if you tap Create a hotspot for me; Android requires it to start a hotspot. The app does not read your location.',
+          '**Change Wi-Fi / network state**: so a guest can join the hotspot named in a scanned QR. Android asks you to confirm each time.',
           '**Network, Wi-Fi state, wake lock, notifications, foreground service**: to stay connected and keep playing with the screen off.',
         ]),
       ]),
@@ -252,6 +255,11 @@ const legalPages = <LegalPage>[
           '**macOS:** the same folder under your home directory (`~/.config/multiphone-player`).',
         ]),
       ]),
+      LegalSection('Saved Wi-Fi details', [
+        LegalBlock(LegalKind.paragraph, [
+          'If you saved a hotspot name and password on a host, clear both fields in the host screen (or switch the option off and delete the data folder above). Guests never save them.',
+        ]),
+      ]),
       LegalSection('Revoking access', [
         LegalBlock(LegalKind.paragraph, [
           'Guests are not remembered after they leave. To remove a connected device right away, use Disconnect beside it on the host screen.',
@@ -292,6 +300,16 @@ const legalPages = <LegalPage>[
             'Host identity key',
             'File in the host\'s data folder',
             'You delete it (see Data Deletion)',
+          ],
+          [
+            'Hotspot name and password you typed',
+            'File in the app\'s data folder, on the host',
+            'You switch it off and delete the data folder, or uninstall',
+          ],
+          [
+            'Hotspot made by the app',
+            'Android, while the host screen is open',
+            'You leave the host screen or tap Stop app hotspot',
           ],
           ['Diagnostic trace', 'Local, only if switched on', 'You delete it'],
           ['Web server logs', 'GitHub', 'Per GitHub\'s own policy'],
@@ -374,6 +392,7 @@ const legalPages = <LegalPage>[
           '**Host approval**: every device must be approved on the host before it hears anything.',
           '**Single-use tokens**: each join uses a fresh token.',
           '**Local network only**: no relay servers.',
+          '**Wi-Fi in the QR is opt-in**: it is off by default, and the host screen warns that anyone who sees the QR can read the Wi-Fi password in it. Use a hotspot password you do not reuse elsewhere.',
         ]),
       ]),
       LegalSection('Known limitations', [

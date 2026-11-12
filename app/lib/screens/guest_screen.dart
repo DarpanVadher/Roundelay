@@ -5,11 +5,23 @@ import 'package:flutter/material.dart';
 
 import '../widgets/glass.dart';
 import '../widgets/roundelay_art.dart';
+
+import 'package:flutter/services.dart';
+
 import '../engine/engine.dart';
+import '../engine/wifi_share.dart';
 
 class GuestScreen extends StatefulWidget {
-  const GuestScreen({super.key, required this.engine, this.scanQr});
+  const GuestScreen({
+    super.key,
+    required this.engine,
+    this.scanQr,
+    this.wifiBridge,
+  });
   final GuestEngine engine;
+
+  /// Joins the hotspot named in a scanned QR (Android); tests inject a fake.
+  final WifiBridge? wifiBridge;
 
   /// Camera QR scanner; null where there is none (desktop), which hides the scan button.
   final Future<String?> Function(BuildContext context)? scanQr;
@@ -23,6 +35,8 @@ class _GuestScreenState extends State<GuestScreen> {
   StreamSubscription<GuestStatus>? _sub;
   GuestStatus _s = const GuestStatus();
   double _latencyMs = defaultLatencyMs.toDouble();
+  late final WifiBridge _bridge = widget.wifiBridge ?? PlatformWifiBridge();
+  String? _wifiJoining, _wifiError;
 
   @override
   void initState() {
@@ -37,22 +51,110 @@ class _GuestScreenState extends State<GuestScreen> {
     _sub?.cancel();
     _link.dispose();
     widget.engine.leave();
+    _bridge.leaveWifi();
     super.dispose();
   }
 
-  bool get _busy => const {
-    GuestPhase.pairing,
-    GuestPhase.awaitingApproval,
-    GuestPhase.connected,
-  }.contains(_s.phase);
+  bool get _busy =>
+      _wifiJoining != null ||
+      const {
+        GuestPhase.pairing,
+        GuestPhase.awaitingApproval,
+        GuestPhase.connected,
+      }.contains(_s.phase);
 
   /// Scan, then join straight away: scanning the host's code is the whole setup.
   Future<void> _scan() async {
     final link = await widget.scanQr!(context);
     if (link == null || !mounted) return;
     setState(() => _link.text = link);
-    await widget.engine.join(link, delayMs: _latencyMs.round());
+    await _joinLink(link);
   }
+
+  /// Joins the hotspot named in the link first (automatically on Android, by showing the details elsewhere), then pairs.
+  Future<void> _joinLink(String link) async {
+    final wifi = wifiFromLink(link);
+    setState(() => _wifiError = null);
+    if (wifi != null) {
+      if (_bridge.canJoinWifi) {
+        setState(() => _wifiJoining = wifi.ssid);
+        try {
+          await _bridge.joinWifi(wifi);
+        } on WifiBridgeException catch (e) {
+          if (mounted) {
+            setState(() {
+              _wifiJoining = null;
+              _wifiError = e.message;
+            });
+          }
+          return;
+        }
+        if (!mounted) return;
+        setState(() => _wifiJoining = null);
+      } else {
+        final ok = await _askToJoinWifi(wifi);
+        if (ok != true || !mounted) return;
+      }
+    }
+    await widget.engine.join(stripWifi(link), delayMs: _latencyMs.round());
+  }
+
+  Future<bool?> _askToJoinWifi(WifiCredentials wifi) => showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      key: const Key('wifi-dialog'),
+      title: const Text("Join the host's Wi-Fi first"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Connect this device to the hotspot below, then continue.',
+          ),
+          const SizedBox(height: 12),
+          _copyRow(ctx, 'Name', wifi.ssid),
+          if (!wifi.isOpen) _copyRow(ctx, 'Password', wifi.password),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          key: const Key('wifi-continue'),
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text("I'm connected"),
+        ),
+      ],
+    ),
+  );
+
+  Widget _copyRow(BuildContext ctx, String label, String value) => Padding(
+    padding: const EdgeInsets.only(bottom: 4),
+    child: Row(
+      children: [
+        Expanded(
+          child: SelectableText.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: '$label: ',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                TextSpan(text: value),
+              ],
+            ),
+          ),
+        ),
+        IconButton(
+          tooltip: 'Copy $label',
+          icon: const Icon(Icons.copy, size: 18),
+          onPressed: () => Clipboard.setData(ClipboardData(text: value)),
+        ),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -128,20 +230,42 @@ class _GuestScreenState extends State<GuestScreen> {
               _busy
                   ? OutlinedButton(
                       key: const Key('leave'),
-                      onPressed: widget.engine.leave,
+                      onPressed: () {
+                        widget.engine.leave();
+                        _bridge.leaveWifi();
+                      },
                       child: const Text('Disconnect'),
                     )
                   : FilledButton(
                       key: const Key('join'),
                       onPressed: valid
-                          ? () => widget.engine.join(
-                              _link.text.trim(),
-                              delayMs: _latencyMs.round(),
-                            )
+                          ? () => _joinLink(_link.text.trim())
                           : null,
                       child: const Text('Join'),
                     ),
               const SizedBox(height: 24),
+              if (_wifiJoining != null)
+                Card(
+                  key: const Key('wifi-joining'),
+                  child: ListTile(
+                    leading: const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    title: Text('Joining Wi-Fi "$_wifiJoining"…'),
+                    subtitle: const Text('Android will ask you to confirm.'),
+                  ),
+                ),
+              if (_wifiError != null)
+                Card(
+                  key: const Key('wifi-error'),
+                  color: Theme.of(context).colorScheme.errorContainer,
+                  child: ListTile(
+                    leading: const Icon(Icons.wifi_off),
+                    title: Text(_wifiError!),
+                  ),
+                ),
               _mixerWarning(context),
               _statusCard(context),
             ],
