@@ -100,109 +100,109 @@ class _HostScreenState extends State<HostScreen> {
           scrolledUnderElevation: 0,
         ),
         body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                children: [
-                  if (_error != null)
-                    Card(
-                      color: scheme.errorContainer,
-                      child: ListTile(
-                        leading: const Icon(Icons.error_outline),
-                        title: Text(_error!),
+          child: ListView(
+            padding: centeredPadding(
+              context,
+              520,
+              const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            ),
+            children: [
+              if (_error != null)
+                Card(
+                  color: scheme.errorContainer,
+                  child: ListTile(
+                    leading: const Icon(Icons.error_outline),
+                    title: Text(_error!),
+                  ),
+                ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutCubic,
+                alignment: Alignment.topCenter,
+                child: _pending == null
+                    ? const SizedBox(width: double.infinity)
+                    : Reveal(
+                        key: ValueKey(_pending!.address),
+                        child: _joinRequestCard(context),
                       ),
-                    ),
-                  AnimatedSize(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOutCubic,
-                    alignment: Alignment.topCenter,
-                    child: _pending == null
-                        ? const SizedBox(width: double.infinity)
-                        : Reveal(
-                            key: ValueKey(_pending!.address),
-                            child: _joinRequestCard(context),
-                          ),
-                  ),
-                  Text(
-                    'Add a device',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  Center(
-                    child: _link == null
-                        ? const SizedBox(
-                            height: 220,
-                            child: Center(child: CircularProgressIndicator()),
-                          )
-                        : Container(
-                            padding: const EdgeInsets.all(12),
-                            color: Colors.white, // QR needs a light quiet zone in dark mode
-                            child: QrImageView(
-                              key: const Key('pairing-qr'),
-                              data: _link!,
-                              size: 220,
-                            ),
-                          ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (_link != null)
-                    TextButton.icon(
-                      key: const Key('copy-link'),
-                      icon: const Icon(Icons.copy, size: 18),
-                      label: const Text('Copy link instead'),
-                      onPressed: () =>
-                          Clipboard.setData(ClipboardData(text: _link!)),
-                    ),
-                  if (defaultTargetPlatform == TargetPlatform.android)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'Start music in any app. Apps that block audio capture (some streaming services) cannot be shared.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  const Divider(height: 32),
-                  Text(
-                    'Connected devices (${_guests.length})',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  if (_guests.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Column(
-                        children: [
-                          RoundelayArt(size: 120, orbiters: 3),
-                          SizedBox(height: 8),
-                          Text('None yet. Scan the code on another device.'),
-                        ],
-                      ),
-                    ),
-                  for (final g in _guests)
-                    Reveal(
-                      key: ValueKey('reveal-${g.id}'),
-                      child: GlassCard(
-                        child: ListTile(
-                          key: Key('guest-${g.id}'),
-                          leading: const Icon(Icons.speaker),
-                          title: Text(g.name),
-                          subtitle: Text(
-                            g.rttUs == null
-                                ? 'Connected'
-                                : 'In sync - ${(g.rttUs! / 1000).toStringAsFixed(1)} ms round trip',
-                          ),
-                          trailing: IconButton(
-                            tooltip: 'Disconnect',
-                            icon: const Icon(Icons.close),
-                            onPressed: () => widget.engine.kick(g.id),
-                          ),
+              ),
+              Text(
+                'Add a device',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              Center(
+                child: _link == null
+                    ? const SizedBox(
+                        height: 220,
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : Container(
+                        padding: const EdgeInsets.all(12),
+                        color: Colors
+                            .white, // QR needs a light quiet zone in dark mode
+                        child: QrImageView(
+                          key: const Key('pairing-qr'),
+                          data: _link!,
+                          size: 220,
                         ),
                       ),
-                    ),
-                ],
               ),
-            ),
+              const SizedBox(height: 8),
+              if (_link != null)
+                TextButton.icon(
+                  key: const Key('copy-link'),
+                  icon: const Icon(Icons.copy, size: 18),
+                  label: const Text('Copy link instead'),
+                  onPressed: () =>
+                      Clipboard.setData(ClipboardData(text: _link!)),
+                ),
+              if (defaultTargetPlatform == TargetPlatform.android)
+                const Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Text(
+                    'Start music in any app. Apps that block audio capture (some streaming services) cannot be shared.',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              const Divider(height: 32),
+              Text(
+                'Connected devices (${_guests.length})',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              if (_guests.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Column(
+                    children: [
+                      RoundelayArt(size: 120, orbiters: 3),
+                      SizedBox(height: 8),
+                      Text('None yet. Scan the code on another device.'),
+                    ],
+                  ),
+                ),
+              for (final g in _guests)
+                Reveal(
+                  key: ValueKey('reveal-${g.id}'),
+                  child: GlassCard(
+                    child: ListTile(
+                      key: Key('guest-${g.id}'),
+                      leading: const Icon(Icons.speaker),
+                      title: Text(g.name),
+                      subtitle: Text(
+                        g.rttUs == null
+                            ? 'Connected'
+                            : 'In sync - ${(g.rttUs! / 1000).toStringAsFixed(1)} ms round trip',
+                      ),
+                      trailing: IconButton(
+                        tooltip: 'Disconnect',
+                        icon: const Icon(Icons.close),
+                        onPressed: () => widget.engine.kick(g.id),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),

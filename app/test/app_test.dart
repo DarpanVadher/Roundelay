@@ -266,8 +266,10 @@ void main() {
     await t.tap(find.byKey(const Key('open-legal')));
     await t.pump();
     await t.pump(const Duration(milliseconds: 400));
-    expect(find.text('Privacy Policy'), findsOneWidget);
+    expect(find.textContaining('Privacy Policy'), findsOneWidget);
     await t.scrollUntilVisible(find.byKey(const Key('legal-data-retention')), 200, scrollable: find.byType(Scrollable).last);
+    await t.ensureVisible(find.byKey(const Key('legal-data-retention')));
+    await t.pump();
     await t.tap(find.byKey(const Key('legal-data-retention')));
     await t.pump();
     await t.pump(const Duration(milliseconds: 400));

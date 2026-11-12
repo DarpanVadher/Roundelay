@@ -66,86 +66,85 @@ class _GuestScreenState extends State<GuestScreen> {
           scrolledUnderElevation: 0,
         ),
         body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                children: [
-                  if (MediaQuery.sizeOf(context).height >= 700) ...[
-                    Center(child: RoundelayArt(size: 96, animate: _busy)),
-                    const SizedBox(height: 12),
-                  ],
-                  if (widget.scanQr != null && !_busy) ...[
-                    FilledButton.icon(
-                      key: const Key('scan'),
-                      icon: const Icon(Icons.qr_code_scanner),
-                      label: const Text('Scan QR code'),
-                      onPressed: _scan,
-                    ),
-                    const SizedBox(height: 16),
-                    const Center(child: Text('or paste the link')),
-                    const SizedBox(height: 12),
-                  ],
-                  TextField(
-                    key: const Key('link-field'),
-                    controller: _link,
-                    enabled: !_busy,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      labelText: 'Pairing link from the host',
-                      hintText: 'mpsp://pair?...',
-                      border: const OutlineInputBorder(),
-                      errorText: _link.text.isNotEmpty && !valid
-                          ? "That doesn't look like a pairing link"
-                          : null,
-                    ),
-                    minLines: 1,
-                    maxLines: 3,
-                  ),
-                  if (!_busy) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      'Latency: ${_latencyMs.round()} ms',
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                    Slider(
-                      key: const Key('latency'),
-                      value: _latencyMs,
-                      min: 60,
-                      max: 400,
-                      divisions: 34,
-                      label: '${_latencyMs.round()} ms',
-                      onChanged: (v) => setState(() => _latencyMs = v),
-                    ),
-                    Text(
-                      'Lower is more live but can glitch on weak Wi-Fi. Raise it if you hear dropouts.',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                  const SizedBox(height: 12),
-                  _busy
-                      ? OutlinedButton(
-                          key: const Key('leave'),
-                          onPressed: widget.engine.leave,
-                          child: const Text('Disconnect'),
-                        )
-                      : FilledButton(
-                          key: const Key('join'),
-                          onPressed: valid
-                              ? () => widget.engine.join(
-                                  _link.text.trim(),
-                                  delayMs: _latencyMs.round(),
-                                )
-                              : null,
-                          child: const Text('Join'),
-                        ),
-                  const SizedBox(height: 24),
-                  _mixerWarning(context),
-                  _statusCard(context),
-                ],
-              ),
+          child: ListView(
+            padding: centeredPadding(
+              context,
+              520,
+              const EdgeInsets.fromLTRB(16, 16, 16, 16),
             ),
+            children: [
+              if (MediaQuery.sizeOf(context).height >= 700) ...[
+                Center(child: RoundelayArt(size: 96, animate: _busy)),
+                const SizedBox(height: 12),
+              ],
+              if (widget.scanQr != null && !_busy) ...[
+                FilledButton.icon(
+                  key: const Key('scan'),
+                  icon: const Icon(Icons.qr_code_scanner),
+                  label: const Text('Scan QR code'),
+                  onPressed: _scan,
+                ),
+                const SizedBox(height: 16),
+                const Center(child: Text('or paste the link')),
+                const SizedBox(height: 12),
+              ],
+              TextField(
+                key: const Key('link-field'),
+                controller: _link,
+                enabled: !_busy,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  labelText: 'Pairing link from the host',
+                  hintText: 'mpsp://pair?...',
+                  border: const OutlineInputBorder(),
+                  errorText: _link.text.isNotEmpty && !valid
+                      ? "That doesn't look like a pairing link"
+                      : null,
+                ),
+                minLines: 1,
+                maxLines: 3,
+              ),
+              if (!_busy) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Latency: ${_latencyMs.round()} ms',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                Slider(
+                  key: const Key('latency'),
+                  value: _latencyMs,
+                  min: 60,
+                  max: 400,
+                  divisions: 34,
+                  label: '${_latencyMs.round()} ms',
+                  onChanged: (v) => setState(() => _latencyMs = v),
+                ),
+                Text(
+                  'Lower is more live but can glitch on weak Wi-Fi. Raise it if you hear dropouts.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+              const SizedBox(height: 12),
+              _busy
+                  ? OutlinedButton(
+                      key: const Key('leave'),
+                      onPressed: widget.engine.leave,
+                      child: const Text('Disconnect'),
+                    )
+                  : FilledButton(
+                      key: const Key('join'),
+                      onPressed: valid
+                          ? () => widget.engine.join(
+                              _link.text.trim(),
+                              delayMs: _latencyMs.round(),
+                            )
+                          : null,
+                      child: const Text('Join'),
+                    ),
+              const SizedBox(height: 24),
+              _mixerWarning(context),
+              _statusCard(context),
+            ],
           ),
         ),
       ),

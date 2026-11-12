@@ -272,3 +272,17 @@ class _GlassCardState extends State<GlassCard> {
     );
   }
 }
+
+/// Side padding that keeps content in a centred column of at most [maxWidth] while the scroll view itself spans
+/// the whole window, so the mouse wheel and the scrollbar work anywhere on screen, not only over the column.
+EdgeInsets centeredPadding(
+  BuildContext context,
+  double maxWidth, [
+  EdgeInsets base = const EdgeInsets.all(16),
+]) {
+  final side = math.max(
+    base.left,
+    (MediaQuery.sizeOf(context).width - maxWidth) / 2,
+  );
+  return EdgeInsets.fromLTRB(side, base.top, side, base.bottom);
+}
