@@ -20,7 +20,7 @@ main.legal { padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(3rem, 7vw, 5rem); max-wid
 .legal table { width: 100%; border-collapse: collapse; font-size: .97rem; margin: 0 0 1em; }
 .legal th, .legal td { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
 .legal th { color: var(--ink-soft); font-weight: 700; }
-.legal .note { background: var(--ground-alt); border-left: 4px solid var(--sun); padding: .9rem 1.1rem; border-radius: 8px; }
+.legal .note { background: var(--ground-alt); border: 1px solid var(--line); padding: .9rem 1.1rem; border-radius: 12px; }
 
 .pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
 .pager a { display: flex; flex-direction: column; text-decoration: none; font-weight: 700; max-width: 48%; }
