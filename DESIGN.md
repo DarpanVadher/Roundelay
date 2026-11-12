@@ -38,3 +38,5 @@ App uses the platform default (Roboto / Segoe UI) with Material 3 type scale. Si
 Neutral cards (home choices, connected devices, guest status) are frosted glass: `GlassCard` in `app/lib/widgets/glass.dart` (18 px backdrop blur, white fill at 62% light / 7% dark, hairline white border) over `GlassBackdrop` (surface plus a cobalt glow top-left and a sun glow bottom-right). Alert cards (errors, join requests, demo banner) stay solid so they never lose contrast.
 
 Illustration and motion: `RoundelayArt` (`app/lib/widgets/roundelay_art.dart`) is the mark as a living illustration: ripples pulse out from the sun dot, and device dots orbit while the host waits for guests. `Reveal` fades and slides content in (staggered 120 ms on the home screen). All of it stops under the OS reduced-motion setting, and the illustration is hidden in windows under 700 px tall.
+
+Background: `GlassBackdrop` also drifts two glows and nine faint audio icons (note, equalizer, speaker, cast, headphones, wifi) at different depths on a 48 s seamless loop; icon alpha is at most 0.16. Glass cards lift with a brand glow on hover (desktop). The sun dot in the illustration is always `#FFD84A`.

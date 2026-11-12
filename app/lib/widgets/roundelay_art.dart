@@ -71,7 +71,7 @@ class _RoundelayArtState extends State<RoundelayArt>
             painter: _ArtPainter(
               t: _running ? _c.value : 0.12,
               ring: s.primary,
-              dot: s.tertiaryContainer,
+              dot: const Color(0xFFFFD84A),
               orbit: s.secondary,
               orbiters: widget.orbiters,
             ),
