@@ -22,10 +22,13 @@ PAGES = [
     "<ul><li><strong>Audio</strong> is captured on the host, encrypted, and sent directly to the guests you approve over your Wi-Fi, hotspot or LAN (UDP for audio, TCP for pairing). It is not sent to the internet and is not recorded or saved by the app.</li>"
     "<li><strong>Pairing details</strong>: a guest's device name and local network address are shown to the host so the host can approve or deny the join. They are held in memory while connected and are not persisted.</li>"
     "<li><strong>The host's identity key</strong> is saved as a file in the host's own data folder so guests can recognise it. On Windows this is <code>%APPDATA%\\MultiPhonePlayer</code>. It never leaves the device.</li>"
+    "<li><strong>Hotspot Wi-Fi details</strong> (optional): if a host switches on <em>Include hotspot Wi-Fi in the QR</em>, the name and password they typed are saved on that device only, and are placed inside the pairing QR code and link so guests can join the hotspot and pair in one scan. Anyone who can see that QR can read the password. A hotspot the app creates itself is not remembered.</li>"
     "<li><strong>Diagnostics</strong>: the app only writes a local trace when someone starts it with the trace option on, and that trace stays on that device.</li></ul>"),
    ("Android permissions",
     "<ul><li><strong>Record audio and media projection</strong>: so a host can capture what other apps play. Android asks you each time.</li>"
     "<li><strong>Camera</strong>: so a guest can scan the host's QR code. Frames are decoded on the device, using Google ML Kit's on-device scanner, and are not stored or sent anywhere by Roundelay. You can skip the camera and paste the pairing link instead.</li>"
+    "<li><strong>Nearby devices (Android 13 and newer) or location (older)</strong>: only if you tap <em>Create a hotspot for me</em>; Android requires it to start a hotspot. The app does not read your location.</li>"
+    "<li><strong>Change Wi-Fi / network state</strong>: so a guest can join the hotspot named in a scanned QR. Android asks you to confirm each time.</li>"
     "<li><strong>Network, Wi-Fi state, wake lock, notifications, foreground service</strong>: to stay connected and keep playing with the screen off.</li></ul>"),
    ("This website",
     "<p>The site is static pages hosted on GitHub Pages. It sets no cookies and uses no analytics. Fonts are served from the site itself. The download section loads a small <code>release.json</code> from the same site and, if that fails, asks the GitHub API for the latest release; GitHub can therefore see your IP address and browser details, as it does for any GitHub page. See <a href=\"third-party-disclosure.html\">Third-party disclosure</a>.</p>"),
@@ -104,6 +107,8 @@ PAGES = [
     "<li><strong>Android:</strong> uninstall the app, or use Settings &rsaquo; Apps &rsaquo; Roundelay &rsaquo; Storage &rsaquo; Clear data.</li>"
     "<li><strong>Linux:</strong> delete <code>~/.config/multiphone-player</code> (or <code>$XDG_CONFIG_HOME/multiphone-player</code>).</li>"
     "<li><strong>macOS:</strong> the same folder under your home directory (<code>~/.config/multiphone-player</code>).</li></ol>"),
+   ("Saved Wi-Fi details",
+    "<p>If you saved a hotspot name and password on a host, clear both fields in the host screen (or switch the option off and delete the data folder above). Guests never save them.</p>"),
    ("Revoking access",
     "<p>Guests are not remembered after they leave. To remove a connected device right away, use <em>Disconnect</em> beside it on the host screen.</p>"),
    ("Website and GitHub",
@@ -117,6 +122,8 @@ PAGES = [
     "<tr><td>Guest name and address</td><td>In memory on the host</td><td>The guest disconnects or the app closes</td></tr>"
     "<tr><td>Single-use join token</td><td>QR code / link</td><td>Used once; a new one is made each time</td></tr>"
     "<tr><td>Host identity key</td><td>File in the host's data folder</td><td>You delete it (see <a href=\"data-deletion.html\">Data Deletion</a>)</td></tr>"
+    "<tr><td>Hotspot name and password you typed</td><td>File in the app's data folder, on the host</td><td>You switch it off and delete the data folder, or uninstall</td></tr>"
+    "<tr><td>Hotspot made by the app</td><td>Android, while the host screen is open</td><td>You leave the host screen or tap <em>Stop app hotspot</em></td></tr>"
     "<tr><td>Diagnostic trace</td><td>Local, only if switched on</td><td>You delete it</td></tr>"
     "<tr><td>Web server logs</td><td>GitHub</td><td>Per GitHub's own policy</td></tr>"
     "</tbody></table>"),
@@ -148,7 +155,7 @@ PAGES = [
  ("data-security", "Data Security", "How Roundelay protects audio and pairing.",
   "Encrypted per-guest keys, a pinned host fingerprint and host approval for every device. It has not yet been independently reviewed.",
   [("What protects you",
-    "<ul><li><strong>Pairing</strong> uses a Noise XX handshake.</li><li><strong>Audio and control packets</strong> are encrypted with ChaCha20-Poly1305, with a separate key for each guest.</li><li><strong>Fingerprint pinning</strong>: the QR code carries a fingerprint of the host's identity, so a guest refuses to talk to an impostor and never sends its one-time token to the wrong device.</li><li><strong>Host approval</strong>: every device must be approved on the host before it hears anything.</li><li><strong>Single-use tokens</strong>: each join uses a fresh token.</li><li><strong>Local network only</strong>: no relay servers.</li></ul>"),
+    "<ul><li><strong>Pairing</strong> uses a Noise XX handshake.</li><li><strong>Audio and control packets</strong> are encrypted with ChaCha20-Poly1305, with a separate key for each guest.</li><li><strong>Fingerprint pinning</strong>: the QR code carries a fingerprint of the host's identity, so a guest refuses to talk to an impostor and never sends its one-time token to the wrong device.</li><li><strong>Host approval</strong>: every device must be approved on the host before it hears anything.</li><li><strong>Single-use tokens</strong>: each join uses a fresh token.</li><li><strong>Local network only</strong>: no relay servers.</li><li><strong>Wi-Fi in the QR is opt-in</strong>: it is off by default, and the host screen warns that anyone who sees the QR can read the Wi-Fi password in it. Use a hotspot password you do not reuse elsewhere.</li></ul>"),
    ("Known limitations",
     "<ul><li>The design has <strong>not been independently audited</strong>.</li><li>The host's identity key is stored as a plain file in its data folder.</li><li>Nothing protects against someone who can already run code on the host or guest device.</li><li>Anyone on your network can see that Roundelay traffic exists, though not its content.</li></ul>"),
    ("What you can do",

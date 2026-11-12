@@ -11,10 +11,26 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../engine/engine.dart';
 import '../engine/platform_info.dart';
+import '../engine/wifi_share.dart';
+import '../widgets/wifi_card.dart';
 
 class HostScreen extends StatefulWidget {
-  const HostScreen({super.key, required this.engine, this.lanIp = findLanIp});
+  const HostScreen({
+    super.key,
+    required this.engine,
+    this.lanIp = findLanIp,
+    this.wifiBridge,
+    this.wifiStore,
+    this.hotspotIp,
+  });
   final HostEngine engine;
+
+  /// Wi-Fi helpers and storage; tests inject fakes, the app uses the platform ones.
+  final WifiBridge? wifiBridge;
+  final WifiStore? wifiStore;
+
+  /// Finds the address of a hotspot after it starts; tests supply it, the app probes the network interfaces.
+  final HotspotIpFinder? hotspotIp;
 
   /// Address other devices use to reach this one; null means there is no usable network.
   final Future<String?> Function() lanIp;
@@ -25,7 +41,14 @@ class HostScreen extends StatefulWidget {
 
 class _HostScreenState extends State<HostScreen> {
   StreamSubscription<HostEvent>? _sub;
-  String? _link, _error;
+  String? _link, _error, _hostIp;
+  WifiCredentials? _wifi;
+  late final WifiBridge _bridge = widget.wifiBridge ?? PlatformWifiBridge();
+  late final WifiStore _store = widget.wifiStore ?? FileWifiStore();
+
+  /// What the QR and the copy button carry: the engine's link plus the optional hotspot details.
+  String? get _shownLink =>
+      _link == null ? null : composeLink(_link!, wifi: _wifi, hostIp: _hostIp);
   JoinRequest? _pending;
   List<ConnectedGuest> _guests = const [];
 
@@ -131,6 +154,16 @@ class _HostScreenState extends State<HostScreen> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
+              HostWifiCard(
+                bridge: _bridge,
+                store: _store,
+                findHotspotIp: widget.hotspotIp ?? defaultHotspotIp,
+                onChanged: (wifi, ip) => setState(() {
+                  _wifi = wifi;
+                  _hostIp = ip;
+                }),
+              ),
+              const SizedBox(height: 16),
               Center(
                 child: _link == null
                     ? const SizedBox(
@@ -143,7 +176,7 @@ class _HostScreenState extends State<HostScreen> {
                             .white, // QR needs a light quiet zone in dark mode
                         child: QrImageView(
                           key: const Key('pairing-qr'),
-                          data: _link!,
+                          data: _shownLink!,
                           size: 220,
                         ),
                       ),
@@ -155,7 +188,7 @@ class _HostScreenState extends State<HostScreen> {
                   icon: const Icon(Icons.copy, size: 18),
                   label: const Text('Copy link instead'),
                   onPressed: () =>
-                      Clipboard.setData(ClipboardData(text: _link!)),
+                      Clipboard.setData(ClipboardData(text: _shownLink!)),
                 ),
               if (defaultTargetPlatform == TargetPlatform.android)
                 const Padding(
