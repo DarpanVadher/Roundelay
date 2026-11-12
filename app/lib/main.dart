@@ -5,6 +5,7 @@ import 'engine/mock_engine.dart';
 import 'engine/native_core.dart';
 import 'engine/platform_info.dart';
 import 'screens/home_screen.dart';
+import 'theme.dart';
 
 /// Factories so the real FFI engine can replace the mocks without touching any screen.
 typedef HostFactory = HostEngine Function();
@@ -33,11 +34,10 @@ class MultiPhonePlayerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme(Brightness b) => ThemeData(useMaterial3: true, colorSchemeSeed: const Color(0xFF3B5BDB), brightness: b);
     return MaterialApp(
       title: 'Roundelay',
-      theme: theme(Brightness.light),
-      darkTheme: theme(Brightness.dark),
+      theme: roundelayTheme(Brightness.light),
+      darkTheme: roundelayTheme(Brightness.dark),
       home: HomeScreen(hostFactory: hostFactory, guestFactory: guestFactory, demoMode: demoMode, demoReason: demoReason, lanIp: lanIp, scanQr: scanQr),
     );
   }

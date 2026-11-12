@@ -58,14 +58,14 @@ class _ScanScreenState extends State<ScanScreen> {
           alignment: Alignment.bottomCenter,
           child: Container(
             width: double.infinity,
-            color: Colors.black54,
+            color: Theme.of(context).colorScheme.inverseSurface.withValues(alpha: 0.88),
             padding: const EdgeInsets.all(16),
             child: SafeArea(
               top: false,
               child: Text(
                 _wrongCode ? "That QR code isn't from this app. Scan the code shown on the host." : 'Point the camera at the QR code on the host device.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
               ),
             ),
           ),

@@ -1,0 +1,85 @@
+import 'package:flutter/material.dart';
+
+/// Roundelay colour system. Tokens mirror DESIGN.md and site/style.css:
+/// cobalt brand, sun accent, blue-tinted neutrals. Contrast pairs are
+/// checked against WCAG AA (see DESIGN.md).
+const ColorScheme roundelayLight = ColorScheme(
+  brightness: Brightness.light,
+  primary: Color(0xFF2433FF),
+  onPrimary: Color(0xFFFFFFFF),
+  primaryContainer: Color(0xFFDFE3FF),
+  onPrimaryContainer: Color(0xFF0D1233),
+  secondary: Color(0xFF424A73),
+  onSecondary: Color(0xFFFFFFFF),
+  secondaryContainer: Color(0xFFE6EAF9),
+  onSecondaryContainer: Color(0xFF0D1233),
+  tertiary: Color(0xFF6B5200),
+  onTertiary: Color(0xFFFFFFFF),
+  tertiaryContainer: Color(0xFFFFD84A),
+  onTertiaryContainer: Color(0xFF0D1233),
+  error: Color(0xFFBA1A1A),
+  onError: Color(0xFFFFFFFF),
+  errorContainer: Color(0xFFFFDAD6),
+  onErrorContainer: Color(0xFF410002),
+  surface: Color(0xFFF3F5FC),
+  onSurface: Color(0xFF0D1233),
+  onSurfaceVariant: Color(0xFF424A73),
+  outline: Color(0xFF666E96),
+  outlineVariant: Color(0xFFCCD3EE),
+  surfaceContainerLowest: Color(0xFFFFFFFF),
+  surfaceContainerLow: Color(0xFFF7F8FD),
+  surfaceContainer: Color(0xFFE9EDFA),
+  surfaceContainerHigh: Color(0xFFE6EAF9),
+  surfaceContainerHighest: Color(0xFFDDE2F5),
+  inverseSurface: Color(0xFF1B2150),
+  onInverseSurface: Color(0xFFEEF0FF),
+  inversePrimary: Color(0xFF9FB0FF),
+  surfaceTint: Color(0xFF2433FF),
+  shadow: Color(0xFF000000),
+  scrim: Color(0xFF000000),
+);
+
+const ColorScheme roundelayDark = ColorScheme(
+  brightness: Brightness.dark,
+  primary: Color(0xFF9FB0FF),
+  onPrimary: Color(0xFF0B0F2B),
+  primaryContainer: Color(0xFF1722C9),
+  onPrimaryContainer: Color(0xFFE4E8FF),
+  secondary: Color(0xFFA9B1D9),
+  onSecondary: Color(0xFF0B0F2B),
+  secondaryContainer: Color(0xFF2A3270),
+  onSecondaryContainer: Color(0xFFEEF0FF),
+  tertiary: Color(0xFFFFD84A),
+  onTertiary: Color(0xFF0D1233),
+  tertiaryContainer: Color(0xFF5C4800),
+  onTertiaryContainer: Color(0xFFFFE9A0),
+  error: Color(0xFFFFB4AB),
+  onError: Color(0xFF690005),
+  errorContainer: Color(0xFF93000A),
+  onErrorContainer: Color(0xFFFFDAD6),
+  surface: Color(0xFF0B0F2B),
+  onSurface: Color(0xFFEEF0FF),
+  onSurfaceVariant: Color(0xFFA9B1D9),
+  outline: Color(0xFF7F89BD),
+  outlineVariant: Color(0xFF2A3270),
+  surfaceContainerLowest: Color(0xFF070A20),
+  surfaceContainerLow: Color(0xFF0F1436),
+  surfaceContainer: Color(0xFF121847),
+  surfaceContainerHigh: Color(0xFF192054),
+  surfaceContainerHighest: Color(0xFF20285F),
+  inverseSurface: Color(0xFFEEF0FF),
+  onInverseSurface: Color(0xFF0D1233),
+  inversePrimary: Color(0xFF2433FF),
+  surfaceTint: Color(0xFF9FB0FF),
+  shadow: Color(0xFF000000),
+  scrim: Color(0xFF000000),
+);
+
+ThemeData roundelayTheme(Brightness brightness) {
+  final scheme = brightness == Brightness.dark ? roundelayDark : roundelayLight;
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: scheme,
+    scaffoldBackgroundColor: scheme.surface,
+  );
+}
