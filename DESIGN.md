@@ -33,3 +33,8 @@ Computed from `theme.dart`: every text pair (on-colour over its container, onSur
 
 ## Typography
 App uses the platform default (Roboto / Segoe UI) with Material 3 type scale. Site: Bricolage Grotesque for display, Figtree for body (self-hosted in `site/fonts`).
+
+## Glass and motion
+Neutral cards (home choices, connected devices, guest status) are frosted glass: `GlassCard` in `app/lib/widgets/glass.dart` (18 px backdrop blur, white fill at 62% light / 7% dark, hairline white border) over `GlassBackdrop` (surface plus a cobalt glow top-left and a sun glow bottom-right). Alert cards (errors, join requests, demo banner) stay solid so they never lose contrast.
+
+Illustration and motion: `RoundelayArt` (`app/lib/widgets/roundelay_art.dart`) is the mark as a living illustration: ripples pulse out from the sun dot, and device dots orbit while the host waits for guests. `Reveal` fades and slides content in (staggered 120 ms on the home screen). All of it stops under the OS reduced-motion setting, and the illustration is hidden in windows under 700 px tall.
