@@ -650,7 +650,7 @@ dependencies = [
 
 [[package]]
 name = "mpsp-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "mpsp-engine",
@@ -659,7 +659,7 @@ dependencies = [
 
 [[package]]
 name = "mpsp-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "chacha20poly1305",
@@ -670,7 +670,7 @@ dependencies = [
 
 [[package]]
 name = "mpsp-engine"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cpal",
@@ -684,7 +684,7 @@ dependencies = [
 
 [[package]]
 name = "mpsp-ffi"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "jni",
  "mpsp-engine",
