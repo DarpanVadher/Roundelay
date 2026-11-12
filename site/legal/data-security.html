@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Security · Roundelay</title>
+<meta name="description" content="How Roundelay protects audio and pairing.">
+<meta name="theme-color" content="#2433ff">
+<link rel="canonical" href="https://darpanvadher.github.io/Roundelay/legal/data-security.html">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="legal.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="legal-hero">
+  <div class="top">
+    <a class="brand" href="../" aria-label="Roundelay home"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="16" cy="16" r="2.6" fill="currentColor"/></svg><span>Roundelay</span></a>
+    <nav aria-label="Main"><a href="./">Legal</a><a href="https://github.com/DarpanVadher/Roundelay">GitHub</a><a class="nav-cta" href="../#download">Download</a></nav>
+  </div>
+  <div class="wrap legal-title">
+    <p class="eyebrow">Legal · 11 of 15</p>
+    <h1>Data Security</h1>
+    <p class="lede">Encrypted per-guest keys, a pinned host fingerprint and host approval for every device. It has not yet been independently reviewed.</p>
+  </div>
+</header>
+<main id="main" class="wrap legal">
+<article>
+<p class="updated">Last updated 12 November 2026</p>
+<section>
+<h2>What protects you</h2>
+<ul><li><strong>Pairing</strong> uses a Noise XX handshake.</li><li><strong>Audio and control packets</strong> are encrypted with ChaCha20-Poly1305, with a separate key for each guest.</li><li><strong>Fingerprint pinning</strong>: the QR code carries a fingerprint of the host's identity, so a guest refuses to talk to an impostor and never sends its one-time token to the wrong device.</li><li><strong>Host approval</strong>: every device must be approved on the host before it hears anything.</li><li><strong>Single-use tokens</strong>: each join uses a fresh token.</li><li><strong>Local network only</strong>: no relay servers.</li></ul>
+</section>
+<section>
+<h2>Known limitations</h2>
+<ul><li>The design has <strong>not been independently audited</strong>.</li><li>The host's identity key is stored as a plain file in its data folder.</li><li>Nothing protects against someone who can already run code on the host or guest device.</li><li>Anyone on your network can see that Roundelay traffic exists, though not its content.</li></ul>
+</section>
+<section>
+<h2>What you can do</h2>
+<p>Use a network you trust, approve only devices you recognise, keep the app and your operating system up to date, and report anything suspicious through the <a href="https://github.com/DarpanVadher/Roundelay/security/advisories/new">private advisory form</a>.</p>
+</section>
+</article>
+<nav class="pager" aria-label="Legal pages"><a rel="prev" href="third-party-disclosure.html"><span>Previous</span>Third-Party Disclosure</a><a rel="next" href="data-breach-procedure.html"><span>Next</span>Data Breach Procedure</a></nav>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <p>Roundelay is open source under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>.</p>
+    <p><a href="../">Home</a> · <a href="./">All legal pages</a> · <a href="https://github.com/DarpanVadher/Roundelay">Source</a> · <a href="https://github.com/DarpanVadher/Roundelay/issues">Report an issue</a></p>
+  </div>
+</footer>
+</body>
+</html>

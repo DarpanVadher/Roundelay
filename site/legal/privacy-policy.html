@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy · Roundelay</title>
+<meta name="description" content="What Roundelay does and does not do with information.">
+<meta name="theme-color" content="#2433ff">
+<link rel="canonical" href="https://darpanvadher.github.io/Roundelay/legal/privacy-policy.html">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="legal.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="legal-hero">
+  <div class="top">
+    <a class="brand" href="../" aria-label="Roundelay home"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="16" cy="16" r="2.6" fill="currentColor"/></svg><span>Roundelay</span></a>
+    <nav aria-label="Main"><a href="./">Legal</a><a href="https://github.com/DarpanVadher/Roundelay">GitHub</a><a class="nav-cta" href="../#download">Download</a></nav>
+  </div>
+  <div class="wrap legal-title">
+    <p class="eyebrow">Legal · 01 of 15</p>
+    <h1>Privacy Policy</h1>
+    <p class="lede">Roundelay has no accounts, no analytics and no servers of its own. Audio and pairing traffic stay on your local network.</p>
+  </div>
+</header>
+<main id="main" class="wrap legal">
+<article>
+<p class="updated">Last updated 12 November 2026</p>
+<section>
+<h2>What we collect</h2>
+<p>Nothing. The app and this website do not collect, receive or store personal data on any server run by the Roundelay authors. We do not run servers for the app, and there is no sign-up, advertising, tracking or telemetry.</p>
+</section>
+<section>
+<h2>What stays on your devices</h2>
+<ul><li><strong>Audio</strong> is captured on the host, encrypted, and sent directly to the guests you approve over your Wi-Fi, hotspot or LAN (UDP for audio, TCP for pairing). It is not sent to the internet and is not recorded or saved by the app.</li><li><strong>Pairing details</strong>: a guest's device name and local network address are shown to the host so the host can approve or deny the join. They are held in memory while connected and are not persisted.</li><li><strong>The host's identity key</strong> is saved as a file in the host's own data folder so guests can recognise it. On Windows this is <code>%APPDATA%\MultiPhonePlayer</code>. It never leaves the device.</li><li><strong>Diagnostics</strong>: the app only writes a local trace when someone starts it with the trace option on, and that trace stays on that device.</li></ul>
+</section>
+<section>
+<h2>Android permissions</h2>
+<ul><li><strong>Record audio and media projection</strong>: so a host can capture what other apps play. Android asks you each time.</li><li><strong>Camera</strong>: so a guest can scan the host's QR code. Frames are decoded on the device, using Google ML Kit's on-device scanner, and are not stored or sent anywhere by Roundelay. You can skip the camera and paste the pairing link instead.</li><li><strong>Network, Wi-Fi state, wake lock, notifications, foreground service</strong>: to stay connected and keep playing with the screen off.</li></ul>
+</section>
+<section>
+<h2>This website</h2>
+<p>The site is static pages hosted on GitHub Pages. It sets no cookies and uses no analytics. Fonts are served from the site itself. The download section loads a small <code>release.json</code> from the same site and, if that fails, asks the GitHub API for the latest release; GitHub can therefore see your IP address and browser details, as it does for any GitHub page. See <a href="third-party-disclosure.html">Third-party disclosure</a>.</p>
+</section>
+<section>
+<h2>Children</h2>
+<p>Roundelay is not directed at children and does not knowingly collect anything from anyone, including children.</p>
+</section>
+<section>
+<h2>Changes and questions</h2>
+<p>If this policy changes, the date above changes and the previous text stays in the <a href="https://github.com/DarpanVadher/Roundelay/commits/main/site/legal">public history</a>. Questions: open an <a href="https://github.com/DarpanVadher/Roundelay/issues">issue</a> (please do not post personal data in it).</p>
+</section>
+</article>
+<nav class="pager" aria-label="Legal pages"><span></span><a rel="next" href="terms-and-conditions.html"><span>Next</span>Terms &amp; Conditions</a></nav>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <p>Roundelay is open source under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>.</p>
+    <p><a href="../">Home</a> · <a href="./">All legal pages</a> · <a href="https://github.com/DarpanVadher/Roundelay">Source</a> · <a href="https://github.com/DarpanVadher/Roundelay/issues">Report an issue</a></p>
+  </div>
+</footer>
+</body>
+</html>
